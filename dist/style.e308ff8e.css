@@ -3,10 +3,11 @@
 body {
     background: #f9f9f9;
     font-family: "roboto", sans-serif;
+    margin-top:40px;
 }
 
 .main-content {
-    padding-top: 100px;
+    padding-top: 50px;
     padding-bottom: 100px;
 }
 
@@ -165,10 +166,10 @@ a {
 
 
 .close{
-    display: none;
+    display: none !important;
 }
 .open{
-    display: block;
+    display: block !important;
 }
 
 th, td{
@@ -176,5 +177,33 @@ th, td{
     border: solid 1px black;
 }
 
+.open-flex{
+    display: flex !important;
+}
+#add{
+    border: solid 1px black;
+}
+
+#viewCmd{
+    cursor: pointer;
+}
+#viewCmd:hover{
+    cursor: pointer;
+    text-decoration:underline;
+}
+.pair{
+    background-color: white;
+}
+
+.impair{
+    background-color: aqua;
+}
+
+table i{
+    color:blue;
+}
+.total-footer{
+    font-size: 18px !important;
+}
 
 /*# sourceMappingURL=/style.e308ff8e.css.map */
