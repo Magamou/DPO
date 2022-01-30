@@ -308,35 +308,35 @@ Object.defineProperty(exports, "__esModule", {
 
 var option_1 = require("./Classes/option");
 
-var plat_resistant_1 = require("./Classes/plat.resistant"); //declaration
+var plat_resistant_1 = require("./Classes/plat.resistant"); //declaration 
 
 
+var CMD_KEY = 'user-cmd-';
+var NB_CMD_KEY = 'user-nb-cmd';
 var choix = [];
 var option = [];
 var menu = document.querySelector("#menu");
 var arr = Array.from(menu.querySelectorAll("input"));
 var platSimple = new plat_resistant_1.PlatDeResistance();
 var tableContainer = document.querySelector("#table-container");
+var tabletitle = document.querySelector("#table-title");
+var viewCmd = document.querySelector("#viewCmd");
 var table = document.querySelector("table");
+var thead = table.querySelector("thead");
 var tbody = table.querySelector("tbody");
 var tfoot = table.querySelector("tfoot");
 var total = platSimple.prix();
+var nbCommands = 0;
 choix.push(platSimple);
-console.log("Plat de resistance: ".concat(platSimple.prix()));
 renderPrice(platSimple.prix());
+loadCommands();
 document.querySelector("#add").addEventListener("click", function (e) {
-  if (menu.className === "open") {
-    menu.className = "close";
-  } else {
-    menu.className = "open";
-    tableContainer.className = "close";
-  }
+  showMenu();
 });
 arr.forEach(function (e) {
   e.addEventListener("click", function (event) {
     if (e.checked) {
-      option.push(e.name); // platSimple=getPlat(platSimple, e.name);
-      // console.log("price", platSimple.prix());
+      option.push(e.name);
     } else {
       option = option.filter(function (opt) {
         return opt !== e.name;
@@ -347,21 +347,38 @@ arr.forEach(function (e) {
   });
 });
 document.querySelector("#send").addEventListener("click", function (e) {
+  tabletitle.innerHTML = "Historique de mes commandes";
+  thead.innerHTML = "<tr><th scope=\"col\">Commande</th><th scope=\"col\" >Prix</th></tr>";
   tbody.innerHTML = "";
   tfoot.innerHTML = "";
   menu.className = "close";
   tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td>Plat principal</td> <td>5000</td> </tr>\n        ");
-  saveData(option);
   option.forEach(function (e) {
-    // let _input=document.querySelector("#"+e) as HTMLInputElement
-    // console.log(_input.value);
-    // console.log(e, " ", (<HTMLInputElement>document.querySelector("#"+e)).value)
-    tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td >".concat(e, "</td> <td>").concat(document.querySelector("#" + e).value, "</td> </tr>\n        "));
+    tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td class=\"text-capitalize\">".concat(e, "</td> <td>").concat(document.querySelector("#" + e).value, "</td> </tr>\n        "));
   }); // console.log(`total des achats ${total}`);
 
-  tfoot.insertAdjacentHTML("beforeend", "\n        <tr> <td>total</td> <td>".concat(total, "</td> </tr>\n        "));
+  tfoot.insertAdjacentHTML("beforeend", "\n        <tr class=\"food-card_price\"> <td>Total</td> <td>".concat(total, " ").concat(total > 0 ? 'CFA' : '', "</td> </tr>\n        "));
   tableContainer.className = "open";
-}); //////////////functions
+  document.querySelector("#order-footer").classList.remove("open-flex");
+  document.querySelector("#order-footer").classList.add("close");
+  tabletitle.innerHTML = "Détails de votre commande";
+  saveCommand();
+  loadCommands();
+});
+
+function showMenu() {
+  if (menu.className === "open") {
+    menu.className = "close";
+  } else {
+    menu.className = "open";
+    tableContainer.className = "close";
+  }
+
+  document.querySelector("#order-footer").classList.remove("close");
+  document.querySelector("#order-footer").classList.add("open-flex");
+  viewCmd.innerHTML = "Voir mes commandes";
+} //////////////functions
+
 
 function renderPrice(price) {
   document.querySelector("#price").innerHTML = price.toString();
@@ -399,8 +416,65 @@ function decoration(arr, plat) {
   return plat.prix();
 }
 
-function saveData(array) {
-  console.log(array.join(","));
+function saveCommand() {
+  var items = ['principal'];
+  items = items.concat(option);
+  items.push(total.toString());
+  var cmd = items.join('-');
+  window.localStorage.setItem("".concat(CMD_KEY).concat(nbCommands++), cmd);
+  window.localStorage.setItem(NB_CMD_KEY, nbCommands.toString());
+}
+
+function clearCommands() {
+  window.localStorage.clear();
+}
+
+function loadCommands() {
+  nbCommands = +window.localStorage.getItem(NB_CMD_KEY);
+  var cmd = [];
+  var i = 0;
+
+  while (i < nbCommands) {
+    var line = window.localStorage.getItem(CMD_KEY + i);
+    cmd.push(line.split('-'));
+    i++;
+  }
+
+  return cmd;
+}
+
+viewCmd.addEventListener('click', function (e) {
+  if (viewCmd.innerText === 'Voir mes commandes') {
+    console.log('vmc');
+    renderCmdList();
+  } else if (viewCmd.innerText === "Effacer tout") {
+    clearCommands();
+    renderCmdList();
+  }
+});
+
+function renderCmdList() {
+  var cmdList = loadCommands();
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+  tfoot.innerHTML = "";
+  menu.className = "close";
+  tabletitle.innerHTML = "Historique de mes commandes";
+  tbody.insertAdjacentHTML("beforeend", "\n        <tr> \n        <td>Plat</td> \n        <td>Entree</td>\n        <td>Dessert</td>\n        <td>Boisson</td>\n        <td>The</td>\n        <td>Cafe</td>\n        <td>Livr\xE9</td>\n        <td>Prix</td>\n         </tr>\n        ");
+  var i = 0;
+  var allTotal = 0;
+  cmdList.forEach(function (cmd) {
+    var prix = +cmd[cmd.length - 1];
+    allTotal += prix;
+    var html = "<tr class=\"".concat(i % 2 == 0 ? 'pair' : 'impair', "\">\n        <td>Thi\xE9bou Diene</td> \n        <td>").concat(cmd.indexOf('entree') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('dessert') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('boisson') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('the') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('cafe') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('livraison') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(prix, "</td>\n        </tr>");
+    i++;
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+  tbody.insertAdjacentHTML("beforeend", "<tr> \n        <td class=\"food-card_price total-footer\">TOTAL</td> \n        <td></td>\n        <td></td>\n        <td></td>\n        <td></td>\n        <td></td>\n        <td></td>\n        <td class=\"food-card_price total-footer\">".concat(allTotal, "&nbsp;CFA</td>\n         </tr>"));
+  tableContainer.className = "open";
+  document.querySelector("#order-footer").classList.remove("open-flex");
+  document.querySelector("#order-footer").classList.add("close");
+  viewCmd.innerHTML = "Effacer tout";
 }
 },{"./Classes/option":"Classes/option.ts","./Classes/plat.resistant":"Classes/plat.resistant.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -430,7 +504,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59022" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63253" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
