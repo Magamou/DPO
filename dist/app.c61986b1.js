@@ -328,26 +328,15 @@ var tfoot = table.querySelector("tfoot");
 var total = platSimple.prix();
 var nbCommands = 0;
 choix.push(platSimple);
-console.log("Plat de resistance: ".concat(platSimple.prix()));
 renderPrice(platSimple.prix());
 loadCommands();
 document.querySelector("#add").addEventListener("click", function (e) {
-  if (menu.className === "open") {
-    menu.className = "close";
-  } else {
-    menu.className = "open";
-    tableContainer.className = "close";
-  }
-
-  document.querySelector("#order-footer").classList.remove("close");
-  document.querySelector("#order-footer").classList.add("open-flex");
-  viewCmd.innerHTML = "Voir mes commandes";
+  showMenu();
 });
 arr.forEach(function (e) {
   e.addEventListener("click", function (event) {
     if (e.checked) {
-      option.push(e.name); // platSimple=getPlat(platSimple, e.name);
-      // console.log("price", platSimple.prix());
+      option.push(e.name);
     } else {
       option = option.filter(function (opt) {
         return opt !== e.name;
@@ -365,9 +354,6 @@ document.querySelector("#send").addEventListener("click", function (e) {
   menu.className = "close";
   tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td>Plat principal</td> <td>5000</td> </tr>\n        ");
   option.forEach(function (e) {
-    // let _input=document.querySelector("#"+e) as HTMLInputElement
-    // console.log(_input.value);
-    // console.log(e, " ", (<HTMLInputElement>document.querySelector("#"+e)).value)
     tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td class=\"text-capitalize\">".concat(e, "</td> <td>").concat(document.querySelector("#" + e).value, "</td> </tr>\n        "));
   }); // console.log(`total des achats ${total}`);
 
@@ -378,7 +364,21 @@ document.querySelector("#send").addEventListener("click", function (e) {
   tabletitle.innerHTML = "Détails de votre commande";
   saveCommand();
   loadCommands();
-}); //////////////functions
+});
+
+function showMenu() {
+  if (menu.className === "open") {
+    menu.className = "close";
+  } else {
+    menu.className = "open";
+    tableContainer.className = "close";
+  }
+
+  document.querySelector("#order-footer").classList.remove("close");
+  document.querySelector("#order-footer").classList.add("open-flex");
+  viewCmd.innerHTML = "Voir mes commandes";
+} //////////////functions
+
 
 function renderPrice(price) {
   document.querySelector("#price").innerHTML = price.toString();
@@ -420,11 +420,9 @@ function saveCommand() {
   var items = ['principal'];
   items = items.concat(option);
   items.push(total.toString());
-  console.log('cmd', items);
   var cmd = items.join('-');
   window.localStorage.setItem("".concat(CMD_KEY).concat(nbCommands++), cmd);
   window.localStorage.setItem(NB_CMD_KEY, nbCommands.toString());
-  console.log('cmd', cmd);
 }
 
 function clearCommands() {
@@ -433,7 +431,6 @@ function clearCommands() {
 
 function loadCommands() {
   nbCommands = +window.localStorage.getItem(NB_CMD_KEY);
-  console.log('nb', window.localStorage.getItem(NB_CMD_KEY));
   var cmd = [];
   var i = 0;
 
@@ -443,17 +440,21 @@ function loadCommands() {
     i++;
   }
 
-  console.log('ZERO', cmd);
   return cmd;
 }
 
-document.querySelector('#viewCmd').addEventListener('click', function (e) {
-  renderCmdList();
+viewCmd.addEventListener('click', function (e) {
+  if (viewCmd.innerText === 'Voir mes commandes') {
+    console.log('vmc');
+    renderCmdList();
+  } else if (viewCmd.innerText === "Effacer tout") {
+    clearCommands();
+    renderCmdList();
+  }
 });
 
 function renderCmdList() {
   var cmdList = loadCommands();
-  console.log('one', cmdList);
   thead.innerHTML = "";
   tbody.innerHTML = "";
   tfoot.innerHTML = "";
@@ -465,7 +466,6 @@ function renderCmdList() {
   cmdList.forEach(function (cmd) {
     var prix = +cmd[cmd.length - 1];
     allTotal += prix;
-    console.log('rendering', cmd);
     var html = "<tr class=\"".concat(i % 2 == 0 ? 'pair' : 'impair', "\">\n        <td>Thi\xE9bou Diene</td> \n        <td>").concat(cmd.indexOf('entree') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('dessert') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('boisson') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('the') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('cafe') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(cmd.indexOf('livraison') > -1 ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>', "</td>\n        <td>").concat(prix, "</td>\n        </tr>");
     i++;
     tbody.insertAdjacentHTML("beforeend", html);
@@ -474,7 +474,7 @@ function renderCmdList() {
   tableContainer.className = "open";
   document.querySelector("#order-footer").classList.remove("open-flex");
   document.querySelector("#order-footer").classList.add("close");
-  viewCmd.innerHTML = "";
+  viewCmd.innerHTML = "Effacer tout";
 }
 },{"./Classes/option":"Classes/option.ts","./Classes/plat.resistant":"Classes/plat.resistant.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -504,7 +504,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44659" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38879" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

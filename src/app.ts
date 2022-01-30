@@ -13,7 +13,7 @@ let arr:HTMLInputElement[]=Array.from(menu.querySelectorAll("input"));
 let platSimple:IPlat=new PlatDeResistance();
 let tableContainer=document.querySelector("#table-container");
 let tabletitle = document.querySelector("#table-title");
-let viewCmd = document.querySelector("#viewCmd");
+let viewCmd = document.querySelector("#viewCmd") as HTMLElement;
 
 let table=document.querySelector("table");
 let thead=table.querySelector("thead");
@@ -24,30 +24,19 @@ let total=platSimple.prix();
 let nbCommands = 0;
 
 choix.push(platSimple);
-console.log(`Plat de resistance: ${platSimple.prix()}`);
 renderPrice(platSimple.prix());
 
 loadCommands();
 
 document.querySelector("#add").addEventListener("click", (e)=>{
-    if(menu.className==="open"){
-        menu.className="close";
-    }
-    else{
-        menu.className="open";
-        tableContainer.className="close";
-    }
-    document.querySelector("#order-footer").classList.remove("close");
-    document.querySelector("#order-footer").classList.add("open-flex");
-    viewCmd.innerHTML = "Voir mes commandes";
+    showMenu();
 })
 
 arr.forEach((e)=>{
     e.addEventListener("click", (event:Event)=>{
         if(e.checked){
             option.push(e.name);
-            // platSimple=getPlat(platSimple, e.name);
-            // console.log("price", platSimple.prix());
+            
         }
         else{
             option=option.filter((opt)=>{
@@ -69,9 +58,7 @@ document.querySelector("#send").addEventListener("click", (e)=>{
         <tr> <td>Plat principal</td> <td>5000</td> </tr>
         `)
     option.forEach((e)=>{
-        // let _input=document.querySelector("#"+e) as HTMLInputElement
-        // console.log(_input.value);
-        // console.log(e, " ", (<HTMLInputElement>document.querySelector("#"+e)).value)
+        
         tbody.insertAdjacentHTML("beforeend", `
         <tr> <td class="text-capitalize">${e}</td> <td>${(<HTMLInputElement>document.querySelector("#"+e)).value}</td> </tr>
         `)
@@ -91,7 +78,18 @@ document.querySelector("#send").addEventListener("click", (e)=>{
 
 
 
-
+function showMenu(){
+    if(menu.className==="open"){
+        menu.className="close";
+    }
+    else{
+        menu.className="open";
+        tableContainer.className="close";
+    }
+    document.querySelector("#order-footer").classList.remove("close");
+    document.querySelector("#order-footer").classList.add("open-flex");
+    viewCmd.innerHTML = "Voir mes commandes";
+}
 //////////////functions
 function renderPrice(price:number){
     document.querySelector("#price").innerHTML=price.toString();
@@ -127,12 +125,10 @@ function saveCommand () {
     let items = ['principal'];
     items = items.concat(option);
     items.push(total.toString())
-    console.log('cmd',items);
     let cmd = items.join('-');
     window.localStorage.setItem(`${CMD_KEY}${nbCommands++}`,cmd);
     window.localStorage.setItem(NB_CMD_KEY,nbCommands.toString());
 
-    console.log('cmd', cmd);
 }
 
 function clearCommands() {
@@ -142,7 +138,6 @@ function clearCommands() {
 
 function loadCommands():string[][]{
     nbCommands = +window.localStorage.getItem(NB_CMD_KEY);
-    console.log('nb', window.localStorage.getItem(NB_CMD_KEY));
     let cmd : string[][] = [];
     let i=0;
     while (i<nbCommands) {
@@ -150,17 +145,23 @@ function loadCommands():string[][]{
         cmd.push(line.split('-'))
         i++;
     }
-    console.log('ZERO',cmd);
     return cmd;
 }
-(<HTMLSpanElement>document.querySelector('#viewCmd')).addEventListener('click',(e)=>{
-    renderCmdList();
+
+viewCmd.addEventListener('click',(e)=>{
+    if(viewCmd.innerText === 'Voir mes commandes')
+    {
+        console.log('vmc');
+        renderCmdList();
+    }
+    else if(viewCmd.innerText === "Effacer tout"){
+        clearCommands();
+        renderCmdList();
+    }
 }) 
 
 function renderCmdList(){
-
     let cmdList = loadCommands();
-    console.log('one', cmdList);
     thead.innerHTML="";
     tbody.innerHTML="";
     tfoot.innerHTML="";
@@ -178,11 +179,11 @@ function renderCmdList(){
         <td>Prix</td>
          </tr>
         `);
-    let i : number = 0;let allTotal = 0;
+    let i : number = 0;
+    let allTotal = 0;
     cmdList.forEach((cmd:string[])=>{
         const prix = +cmd[cmd.length-1];
         allTotal += prix;
-        console.log('rendering', cmd);
         let html =`<tr class="${i%2 == 0 ? 'pair' : 'impair'}">
         <td>Thiébou Diene</td> 
         <td>${(cmd.indexOf('entree') > -1)?'<i class="fa fa-check"></i>':'<i class="fa fa-times"></i>' }</td>
@@ -211,5 +212,5 @@ function renderCmdList(){
     tableContainer.className="open";
     document.querySelector("#order-footer").classList.remove("open-flex");
     document.querySelector("#order-footer").classList.add("close");
-    viewCmd.innerHTML="";
+    viewCmd.innerHTML="Effacer tout";
 }
