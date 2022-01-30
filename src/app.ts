@@ -54,6 +54,7 @@ document.querySelector("#send").addEventListener("click", (e)=>{
     tbody.insertAdjacentHTML("beforeend", `
         <tr> <td>Plat principal</td> <td>5000</td> </tr>
         `)
+        saveData(option);
     option.forEach((e)=>{
         // let _input=document.querySelector("#"+e) as HTMLInputElement
         // console.log(_input.value);
@@ -101,4 +102,8 @@ function decoration(arr:string[], plat:IPlat):number{
     // console.log(plat.prix());
     renderPrice(plat.prix());
     return plat.prix();
+}
+
+function saveData(array:string[]){
+    console.log(array.join(","));
 }

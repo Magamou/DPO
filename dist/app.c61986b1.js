@@ -351,6 +351,7 @@ document.querySelector("#send").addEventListener("click", function (e) {
   tfoot.innerHTML = "";
   menu.className = "close";
   tbody.insertAdjacentHTML("beforeend", "\n        <tr> <td>Plat principal</td> <td>5000</td> </tr>\n        ");
+  saveData(option);
   option.forEach(function (e) {
     // let _input=document.querySelector("#"+e) as HTMLInputElement
     // console.log(_input.value);
@@ -397,6 +398,10 @@ function decoration(arr, plat) {
   renderPrice(plat.prix());
   return plat.prix();
 }
+
+function saveData(array) {
+  console.log(array.join(","));
+}
 },{"./Classes/option":"Classes/option.ts","./Classes/plat.resistant":"Classes/plat.resistant.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -425,7 +430,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51714" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59022" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
