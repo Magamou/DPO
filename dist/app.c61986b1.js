@@ -433,7 +433,15 @@ var total = platSimple.prix();
 var nbCommands = 0;
 (0, decoration_1.renderPrice)(platSimple.prix());
 (0, data_management_1.loadCommands)(nbCommands);
-document.querySelector("#add").addEventListener("click", function (e) {});
+document.querySelector("#add").addEventListener("click", function (e) {
+  console.log("add event");
+
+  if (menu.className === "open") {
+    menu.className = "close";
+  } else {
+    menu.className = "open";
+  }
+});
 arr.forEach(function (e) {
   e.addEventListener("click", function (event) {
     if (e.checked) {
@@ -531,7 +539,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51068" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65461" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

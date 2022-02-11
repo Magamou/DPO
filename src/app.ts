@@ -30,6 +30,14 @@ renderPrice(platSimple.prix());
 loadCommands(nbCommands);
 
 document.querySelector("#add").addEventListener("click", (e) => {
+  console.log("add event");
+  if(menu.className==="open"){
+    menu.className="close";
+  }
+  else{
+    menu.className="open";
+  }
+  
 });
 
 arr.forEach((e) => {
